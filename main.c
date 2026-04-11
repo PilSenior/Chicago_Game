@@ -6,7 +6,7 @@ int roll_a_dice(void);
 int play_user(int target);
 int play_computer(int target);
 void scoresheet(int comp_total, int user_total);
-int calculate_score(int dice1, int dice2, int target);
+int calculate_score(int dice1, int dice2);
 
 /*
 Name Surname: YOUR_NAME_SURNAME
@@ -33,7 +33,6 @@ int play_user(int target)
     int dice1;
     int dice2;
     int hits = 0;
-    int round_total = 0;
     char choice = 'Y';
 
     while (roll_no <= 3 && choice != 'N' && choice != 'n')
@@ -43,36 +42,35 @@ int play_user(int target)
 
         printf("You got [Dice 1]: %d [Dice 2]: %d\n", dice1, dice2);
 
-        int is_hit = (calculate_score(dice1, dice2, target) > 0) ? 1 : 0;
+        int is_hit = (calculate_score(dice1, dice2) == target);
 
         if (is_hit)
-            hits++;
-        else
-            hits = 0;
-        
+        {
+            hits++; // Hedefi vurdukça katlayarak artır
+        }
+        else if (!is_hit)
+        {
+            hits = 0; // Hedefi kaçırdığın an seri bozulur, her şey sıfırlanır
+        }
 
-        round_total = hits * target;
+        int round_total = hits * target;
         int roll_score = is_hit ? target : 0;
-
         printf("Your score: %d Total score: %d\n", roll_score, round_total);
 
-        if(roll_no < 3)
-        {   
+        if (roll_no < 3)
+        {
             do
             {
                 printf("Shall I roll for you again (Y/N)? ");
                 scanf(" %c", &choice);
-
                 if (choice != 'Y' && choice != 'y' && choice != 'N' && choice != 'n')
-                {
                     printf("Invalid input, Try Again!\n");
-                }
             } while (choice != 'Y' && choice != 'y' && choice != 'N' && choice != 'n');
         }
         roll_no++;
     }
 
-    return round_total;
+    return (hits > 0) ? hits * target : 0;
 }
 
 int play_computer(int target)
@@ -101,7 +99,7 @@ int play_computer(int target)
         }
         printf("[Dice 1]: %d [Dice 2]: %d\n", dice1, dice2);
 
-        int is_hit = (calculate_score(dice1, dice2, target) > 0) ? 1 : 0;
+        int is_hit = (calculate_score(dice1, dice2) == target) ? 1 : 0;
 
         if (is_hit)
             hits++;
@@ -109,7 +107,7 @@ int play_computer(int target)
             hits = 0;
         round_total = hits * target;
         roll_score = is_hit ? target : 0;
-        roll_no++; 
+        roll_no++;
     }
     printf("My score: %d Total score: %d\n", roll_score, round_total);
     return round_total;
@@ -122,14 +120,9 @@ void scoresheet(int comp_total, int user_total)
     printf("%d           %d\n", comp_total, user_total);
 }
 
-int calculate_score(int dice1, int dice2, int target)
+int calculate_score(int dice1, int dice2)
 {
-    if (dice1 + dice2 == target)
-    {
-        return target;
-    }
-
-    return 0;
+    return dice1 + dice2;
 }
 
 int main()
